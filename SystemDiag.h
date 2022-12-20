@@ -40,11 +40,9 @@ public:
 	afx_msg void OnBnClickedButton5();
 	afx_msg void OnBnClickedButton6();
 	afx_msg void OnBnClickedButton7();
-
-
-public:
 	int sort_column;  // 表示需要排序的列
 	static bool method;  //类内申明
 	static int CALLBACK listCompare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 	afx_msg void OnColumnclickList1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedButton8();
 };

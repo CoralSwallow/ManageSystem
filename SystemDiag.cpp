@@ -8,6 +8,9 @@
 #include "AddDlg.h"
 
 
+int sum = 0;
+
+
 // SystemDiag 对话框
 
 IMPLEMENT_DYNAMIC(SystemDiag, CDialogEx)
@@ -41,6 +44,7 @@ BEGIN_MESSAGE_MAP(SystemDiag, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON7, &SystemDiag::OnBnClickedButton7)
 	ON_WM_LBUTTONDBLCLK()
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST1, &SystemDiag::OnColumnclickList1)
+	ON_BN_CLICKED(IDC_BUTTON8, &SystemDiag::OnBnClickedButton8)
 END_MESSAGE_MAP()
 
 
@@ -64,11 +68,12 @@ BOOL SystemDiag::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	MyList.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
 
-	MyList.InsertColumn(0, _T("使用人员"), 0, 140);
-	MyList.InsertColumn(1, _T("使用时间"), 0, 140);
-	MyList.InsertColumn(2, _T("使用金额"), 0, 140);
-	MyList.InsertColumn(3, _T("收支情况"), 0, 140);
-	MyList.InsertColumn(4, _T("用途"), 0, 140);
+	MyList.InsertColumn(0, _T("使用人员"), 0, 120);
+	MyList.InsertColumn(1, _T("使用时间"), 0, 120);
+	MyList.InsertColumn(2, _T("使用金额"), 0, 120);
+	MyList.InsertColumn(3, _T("收支情况"), 0, 120);
+	MyList.InsertColumn(4, _T("用途"), 0, 120);
+	MyList.InsertColumn(5, _T("余额"), 0, 120);
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -255,7 +260,7 @@ int CALLBACK SystemDiag::listCompare(LPARAM lParam1, LPARAM lParam2, LPARAM lPar
 	CString strItem1 = (pListCtrl->plist)->GetItemText(lParam1, col);
 	CString strItem2 = (pListCtrl->plist)->GetItemText(lParam2, col);
 
-	if (col == 0)  // CString
+	if (col == 0 || col == 1 || col == 3 || col == 4)  // CString
 	{
 		int tmp = strItem1.CompareNoCase(strItem2); //如果两个对象完全一致则返回0，如果小于lpsz，则返回-1。
 		if (method) // true--升序
@@ -273,7 +278,7 @@ int CALLBACK SystemDiag::listCompare(LPARAM lParam1, LPARAM lParam2, LPARAM lPar
 				return 1;
 		}
 	}
-	else if (col == 1 || col == 2)  // int 
+	else if (col == 2)  // int 
 	{
 		__int64 n1 = _atoi64(strItem1);
 		__int64 n2 = _atoi64(strItem2);
@@ -314,4 +319,22 @@ void SystemDiag::OnColumnclickList1(NMHDR* pNMHDR, LRESULT* pResult)
 	//m_ListCtrl.SortItems(listCompare,(LPARAM)&m_ListCtrl);  
 	MyList.SortItems(listCompare, (LPARAM)&data);
 	*pResult = 0;
+}
+
+
+void SystemDiag::OnBnClickedButton8()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	sum = 0;
+	for (int i = 0; i < MyList.GetItemCount(); i++)
+	{
+		if (MyList.GetItemText(i, 3) == "收入")
+			sum = sum + atoi(MyList.GetItemText(i, 2));
+		else
+			sum = sum - atoi(MyList.GetItemText(i, 2));
+		CString str;
+		str.Format("%d", sum);
+		MyList.SetItemText(i, 5, str);
+	}
 }
